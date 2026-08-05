@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ujian Online Mapsi</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
+
+:root{
+  --ink:#182E26;
+  --paper:#F3EFDD;
+  --emerald:#1F6E5C;
+  --emerald-dark:#123028;
+  --gold:#C9A24B;
+  --gold-dark:#9C7A2E;
+  --sand:#EAE2C8;
+  --card:#FFFFFF;
+  --danger:#B4453A;
+  --success:#2E7D5B;
+  --muted:#6B7566;
+  --line:#DCD3AE;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Source Sans 3',system-ui,sans-serif;background:var(--paper);color:var(--ink);}
+h1,h2,h3,.display{font-family:'Amiri',Georgia,serif;}
+.app-shell{min-height:100vh;display:flex;flex-direction:column;}
+.topbar{
+  background:linear-gradient(120deg,var(--emerald-dark),var(--emerald));
+  color:#fff;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);position:relative;overflow:hidden;
+}
+.topbar::after{
+  content:"";position:absolute;right:-40px;top:-60px;width:220px;height:220px;
+  background:
+    radial-gradient(circle at center, transparent 0 58%, rgba(201,162,75,.18) 58% 60%, transparent 60%),
+    radial-gradient(circle at center, transparent 0 40%, rgba(201,162,75,.12) 40% 42%, transparent 42%);
+  border-radius:50%;
+}
+.brand{display:flex;flex-direction:column;gap:2px;z-index:1;}
+.brand .title{font-size:22px;font-weight:700;letter-spacing:.3px;}
+.brand .sub{font-size:12.5px;color:#DCEFE7;letter-spacing:.5px;text-transform:uppercase;}
+.topbar-right{display:flex;align-items:center;gap:12px;z-index:1;font-size:14px;}
+.pill{background:rgba(255,255,255,.14);padding:6px 14px;border-radius:999px;font-size:13px;}
+.btn{border:none;border-radius:10px;padding:10px 18px;font-size:14.5px;font-weight:600;cursor:pointer;transition:transform .12s ease;font-family:inherit;}
+.btn:active{transform:scale(.97);}
+.btn-gold{background:var(--gold);color:#2b2205;}
+.btn-gold:hover{background:var(--gold-dark);}
+.btn-emerald{background:var(--emerald);color:#fff;}
+.btn-emerald:hover{background:var(--emerald-dark);}
+.btn-outline{background:transparent;border:1.5px solid rgba(255,255,255,.6);color:#fff;}
+.btn-outline:hover{background:rgba(255,255,255,.12);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-ghost{background:var(--sand);color:var(--ink);}
+.btn-ghost:hover{background:#E3D9AF;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+main{flex:1;padding:32px 24px 60px;max-width:1180px;margin:0 auto;width:100%;}
+.hero{text-align:center;padding:36px 12px 8px;}
+.hero h1{font-size:34px;margin:0 0 8px;color:var(--emerald-dark);}
+.hero p{color:var(--muted);font-size:15.5px;max-width:560px;margin:0 auto;}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:760px;margin:34px auto 0;}
+@media(max-width:640px){.role-grid{grid-template-columns:1fr;}}
+.role-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 24px;text-align:left;cursor:pointer;transition:transform .15s ease;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.role-card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(24,46,38,.12);}
+.role-card .icon{font-size:30px;margin-bottom:10px;}
+.role-card h3{margin:0 0 6px;font-size:19px;color:var(--emerald-dark);}
+.role-card p{margin:0;color:var(--muted);font-size:14px;line-height:1.5;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.card h2{margin:0 0 4px;font-size:21px;color:var(--emerald-dark);}
+.card .desc{color:var(--muted);font-size:13.5px;margin:0 0 18px;}
+label{display:block;font-size:13.5px;font-weight:600;color:var(--ink);margin:14px 0 6px;}
+input[type=text],input[type=number],input[type=password],select,textarea{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;font-size:14.5px;font-family:inherit;background:#fffdf7;}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--emerald);outline-offset:1px;border-color:var(--emerald);}
+.form-actions{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;}
+.back-link{background:none;border:none;color:var(--emerald-dark);font-weight:600;cursor:pointer;font-size:14px;padding:0;margin-bottom:14px;}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;border-bottom:2px solid var(--line);}
+.tab{padding:10px 16px;border:none;background:none;font-size:14.5px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;}
+.tab.active{color:var(--emerald-dark);border-bottom-color:var(--gold);}
+table{width:100%;border-collapse:collapse;font-size:13.8px;}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);}
+th{color:var(--emerald-dark);font-size:12.5px;text-transform:uppercase;letter-spacing:.4px;}
+tr:hover td{background:#FBF8EC;}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;}
+.badge-green{background:#E1F0E7;color:var(--success);}
+.badge-red{background:#F7E3E0;color:var(--danger);}
+.badge-gold{background:#F6EBD0;color:var(--gold-dark);}
+.exam-layout{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start;}
+@media(max-width:860px){.exam-layout{grid-template-columns:1fr;}}
+.timer-box{background:var(--emerald-dark);color:#fff;border-radius:14px;padding:16px 18px;text-align:center;margin-bottom:14px;}
+.timer-box .t{font-size:28px;font-weight:700;font-family:'Amiri',serif;letter-spacing:1px;}
+.timer-box .l{font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:#CFE7DC;}
+.nav-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;max-height:340px;overflow-y:auto;padding:4px;}
+.nav-cell{aspect-ratio:1;border-radius:7px;border:1.5px solid var(--line);background:#fff;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);}
+.nav-cell.answered{background:var(--emerald);color:#fff;border-color:var(--emerald);}
+.nav-cell.doubt{background:var(--gold);color:#3a2c05;border-color:var(--gold);}
+.nav-cell.current{outline:2.5px solid var(--emerald-dark);outline-offset:1px;}
+.q-materi{display:inline-block;background:var(--sand);color:var(--emerald-dark);font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;margin-bottom:12px;}
+.q-text{font-size:17px;line-height:1.6;margin-bottom:20px;}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:13px 15px;border:1.5px solid var(--line);border-radius:11px;margin-bottom:10px;cursor:pointer;background:#fff;transition:border-color .12s, background .12s;}
+.opt:hover{border-color:var(--emerald);}
+.opt.selected{border-color:var(--emerald);background:#EFF7F2;}
+.opt .letter{width:26px;height:26px;border-radius:50%;background:var(--sand);color:var(--emerald-dark);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.opt.selected .letter{background:var(--emerald);color:#fff;}
+.exam-nav-buttons{display:flex;justify-content:space-between;margin-top:20px;gap:10px;flex-wrap:wrap;}
+.progress-bar{height:8px;background:var(--sand);border-radius:99px;overflow:hidden;margin:10px 0 4px;}
+.progress-bar>div{height:100%;background:var(--gold);}
+.materi-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.materi-row .name{width:190px;font-size:13.5px;font-weight:600;flex-shrink:0;}
+.materi-bar{flex:1;height:14px;background:var(--sand);border-radius:99px;overflow:hidden;}
+.materi-bar>div{height:100%;background:var(--emerald);}
+.materi-row .pct{width:48px;text-align:right;font-size:13px;font-weight:700;color:var(--emerald-dark);}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+@media(max-width:700px){.stat-grid{grid-template-columns:1fr 1fr;}}
+.stat-box{background:var(--sand);border-radius:12px;padding:16px;text-align:center;}
+.stat-box .v{font-size:26px;font-weight:700;font-family:'Amiri',serif;color:var(--emerald-dark);}
+.stat-box .l{font-size:12px;color:var(--muted);margin-top:2px;}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--emerald-dark);color:#fff;padding:13px 20px;border-radius:10px;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.2);z-index:200;max-width:320px;}
+.qlist-item{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line);}
+.qlist-item .n{color:var(--muted);font-size:13px;}
+.hint{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5;}
+.flex-between{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.small-btn{padding:6px 12px;font-size:12.5px;border-radius:8px;}
+.review-box{border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+.review-box.correct{border-color:var(--success);background:#F3FAF6;}
+.review-box.wrong{border-color:var(--danger);background:#FBF2F1;}
+footer{text-align:center;padding:20px;font-size:12px;color:var(--muted);}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="topbar">
+    <div class="brand">
+      <span class="title display">Ujian Online Mapsi</span>
+      <span class="sub">Sistem Ujian & Analisis Materi</span>
+    </div>
+    <div class="topbar-right" id="topbarRight"></div>
+  </div>
+  <main id="main"></main>
+  <footer>Aplikasi ini tersambung ke server/database sungguhan — nilai dan soal tersimpan terpusat dan dapat diakses siswa dari perangkat mana pun selama alamat web ini bisa dijangkau.</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ======================================================================
+   KONFIGURASI SUPABASE — WAJIB DIISI
+   Ambil dari: Supabase Dashboard > Project Settings > API
+   ====================================================================== */
+const SUPABASE_URL = 'https://gnkpdesbojnnzngdpaye.supabase.co/rest/v1/';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdua3BkZXNib2pubnpuZ2RwYXllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MTkzNDcsImV4cCI6MjEwMTQ5NTM0N30.zfbG0-Ui8wSM4DJSudG6a_YKg5Q8OvNpav8mQKqjQY8';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const LETTERS = ['A','B','C','D','E'];
+
+function mapOpsi(r){
+  const out = {};
+  ['A','B','C','D','E'].forEach(L=>{
+    const v = r['opsi_'+L.toLowerCase()];
+    if(v) out[L] = v;
+  });
+  return out;
+}
+
+
+let state = {
+  view: 'home',
+  questions: [],
+  settings: { durasiMenit: 90, acakSoal: true, acakPilihan: false, tampilkanHasil: true },
+  isAdmin: false,
+  siswa: { nama:'', kelas:'', absen:'' },
+  exam: null,
+  lastResult: null,
+  guruTab: 'soal',
+  soalAdmin: [],
+  hasilAdmin: null,
+  analisisAdmin: null,
+  editingQuestion: null,
+  loading: true,
+  configOk: true,
+};
+
+/* ===================== INIT ===================== */
+async function init(){
+  if(SUPABASE_URL.includes('xxxxxxxxxxxxxxxx') || SUPABASE_ANON_KEY.includes('isi-dengan')){
+    state.configOk = false; state.loading = false; render(); return;
+  }
+  try{
+    const [{ data: soalRows, error: e1 }, { data: setRow, error: e2 }, { data: sess }] = await Promise.all([
+      sb.from('soal_public').select('*').order('id', { ascending:true }),
+      sb.from('pengaturan').select('*').eq('id',1).single(),
+      sb.auth.getSession(),
+    ]);
+    if(e1) throw e1;
+    state.questions = (soalRows||[]).map(r=>({
+      id: r.id, materi: r.materi, soal: r.soal,
+      opsi: mapOpsi(r)
+    }));
+    if(setRow){
+      state.settings = {
+        durasiMenit: setRow.durasi_menit, acakSoal: setRow.acak_soal,
+        acakPilihan: setRow.acak_pilihan, tampilkanHasil: setRow.tampilkan_hasil,
+      };
+    }
+    state.isAdmin = !!(sess && sess.session);
+  }catch(e){
+    toast('Gagal terhubung ke Supabase: '+(e.message||e));
+  }
+  state.loading = false;
+  render();
+}
+
+/* ===================== ROOT RENDER ===================== */
+function render(){
+  const main = document.getElementById('main');
+  const right = document.getElementById('topbarRight');
+  right.innerHTML = '';
+  if(!state.configOk){
+    main.innerHTML = `<div class="card" style="max-width:600px;margin:40px auto;text-align:center;">
+      <h2>⚙️ Konfigurasi Belum Diisi</h2>
+      <p class="desc">Buka file <strong>index.html</strong>, cari bagian <strong>KONFIGURASI SUPABASE</strong> di awal tag &lt;script&gt;,
+      lalu isi <code>SUPABASE_URL</code> dan <code>SUPABASE_ANON_KEY</code> sesuai project Supabase Anda
+      (Project Settings &gt; API). Lihat README.md untuk panduan lengkap.</p>
+    </div>`;
+    return;
+  }
+  if(state.loading){ main.innerHTML = '<div class="empty">Memuat data ujian...</div>'; return; }
+  if(state.view==='home') return renderHome(main, right);
+  if(state.view==='siswa-login') return renderSiswaLogin(main, right);
+  if(state.view==='siswa-exam') return renderExam(main, right);
+  if(state.view==='siswa-result') return renderSiswaResult(main, right);
+  if(state.view==='guru-login') return renderGuruLogin(main, right);
+  if(state.view==='guru-dashboard') return renderGuruDashboard(main, right);
+}
+function topRightHome(right){
+  right.innerHTML = `<span class="pill">● Terhubung ke Supabase</span> <span class="pill">${state.questions.length} soal tersimpan</span>`;
+}
+function goto(view){ state.view = view; render(); }
+
+/* ===================== HOME ===================== */
+function renderHome(main, right){
+  topRightHome(right);
+  main.innerHTML = `
+    <div class="hero">
+      <h1>Ujian Online Pendidikan Agama Islam (Mapsi)</h1>
+      <p>Kerjakan atau kelola ujian 150 soal dari jarak jauh. Data tersimpan terpusat di Supabase sehingga rekap nilai selalu lengkap dari perangkat mana pun.</p>
+    </div>
+    <div class="role-grid">
+      <div class="role-card" onclick="goto('siswa-login')">
+        <div class="icon">📝</div>
+        <h3>Masuk sebagai Siswa</h3>
+        <p>Isi data diri lalu kerjakan soal ujian yang sudah disiapkan guru. Nilai tersimpan otomatis ke database.</p>
+      </div>
+      <div class="role-card" onclick="goto('guru-login')">
+        <div class="icon">🗂️</div>
+        <h3>Masuk sebagai Guru / Admin</h3>
+        <p>Kelola bank soal, atur waktu ujian, lihat rekap nilai, dan analisis materi yang paling banyak salah.</p>
+      </div>
+    </div>`;
+}
+
+/* ===================== SISWA: LOGIN ===================== */
+function renderSiswaLogin(main, right){
+  topRightHome(right);
+  main.innerHTML = `
+    <button class="back-link" onclick="goto('home')">← Kembali</button>
+    <div class="card" style="max-width:480px;margin:0 auto;">
+      <h2>Data Peserta Ujian</h2>
+      <p class="desc">Lengkapi data berikut sebelum memulai ujian Mapsi (${state.questions.length} soal, waktu ${state.settings.durasiMenit} menit).</p>
+      <label>Nama Lengkap</label>
+      <input type="text" id="inNama" placeholder="Contoh: Ahmad Fauzan">
+      <label>Kelas</label>
+      <input type="text" id="inKelas" placeholder="Contoh: IX-A">
+      <label>Nomor Absen / NIS (opsional)</label>
+      <input type="text" id="inAbsen" placeholder="Contoh: 12">
+      <div class="form-actions">
+        <button class="btn btn-emerald" onclick="startExam()">Mulai Ujian →</button>
+      </div>
+      <div class="hint">Ujian akan berjalan mundur otomatis begitu Anda menekan "Mulai Ujian". Pastikan koneksi internet stabil.</div>
+    </div>`;
+}
+
+function startExam(){
+  const nama = document.getElementById('inNama').value.trim();
+  const kelas = document.getElementById('inKelas').value.trim();
+  const absen = document.getElementById('inAbsen').value.trim();
+  if(!nama || !kelas){ toast('Nama dan kelas wajib diisi'); return; }
+  if(!state.questions.length){ toast('Belum ada soal tersedia. Hubungi guru.'); return; }
+  state.siswa = { nama, kelas, absen };
+
+  let order = state.questions.map(q=>q.id);
+  if(state.settings.acakSoal) order = shuffle(order);
+
+  state.exam = {
+    order, answers: {}, doubt: {}, current: 0,
+    endAt: Date.now() + state.settings.durasiMenit*60*1000,
+    waktuMulai: Date.now(),
+    optionOrder: {},
+  };
+  order.forEach(qid=>{
+    const q = state.questions.find(x=>x.id===qid);
+    let letters = Object.keys(q.opsi);
+    if(state.settings.acakPilihan) letters = shuffle(letters);
+    state.exam.optionOrder[qid] = letters;
+  });
+
+  state.view = 'siswa-exam';
+  render();
+  startTimerLoop();
+}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+/* ===================== SISWA: EXAM ===================== */
+let timerInterval = null;
+function startTimerLoop(){
+  if(timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    if(!state.exam || state.view !== 'siswa-exam'){ clearInterval(timerInterval); return; }
+    const remain = state.exam.endAt - Date.now();
+    const el = document.getElementById('timerText');
+    if(remain <= 0){ clearInterval(timerInterval); finishExam(true); return; }
+    if(el) el.textContent = formatTime(remain);
+  }, 1000);
+}
+function formatTime(ms){
+  const s = Math.max(0, Math.floor(ms/1000));
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  return (h>0? String(h).padStart(2,'0')+':':'') + String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
+}
+
+function renderExam(main, right){
+  right.innerHTML = `<span class="pill">${state.siswa.nama} — ${state.siswa.kelas}</span>`;
+  const ex = state.exam;
+  const qid = ex.order[ex.current];
+  const q = state.questions.find(x=>x.id===qid);
+  const answered = Object.keys(ex.answers).length;
+  const letters = ex.optionOrder[qid];
+
+  main.innerHTML = `
+    <div class="exam-layout">
+      <div>
+        <div class="card">
+          <div class="flex-between">
+            <span class="q-materi">${escapeHtml(q.materi||'Umum')}</span>
+            <span style="color:var(--muted);font-size:13px;">Soal ${ex.current+1} dari ${ex.order.length}</span>
+          </div>
+          <div class="progress-bar"><div style="width:${(answered/ex.order.length*100).toFixed(0)}%"></div></div>
+          <div class="q-text">${ex.current+1}. ${escapeHtml(q.soal)}</div>
+          ${letters.map(L=>`
+            <div class="opt ${ex.answers[qid]===L?'selected':''}" onclick="chooseAnswer(${qid},'${L}')">
+              <div class="letter">${L}</div>
+              <div>${escapeHtml(q.opsi[L])}</div>
+            </div>`).join('')}
+          <div class="exam-nav-buttons">
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-ghost" ${ex.current===0?'disabled':''} onclick="moveQ(-1)">← Sebelumnya</button>
+              <button class="btn btn-ghost" onclick="toggleDoubt(${qid})">${ex.doubt[qid]?'✓ Ditandai Ragu':'Tandai Ragu-ragu'}</button>
+            </div>
+            <div style="display:flex;gap:8px;">
+              ${ex.current < ex.order.length-1
+                ? `<button class="btn btn-emerald" onclick="moveQ(1)">Selanjutnya →</button>`
+                : `<button class="btn btn-gold" onclick="confirmFinish()">Selesai & Kumpulkan</button>`}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="timer-box">
+          <div class="l">Sisa Waktu</div>
+          <div class="t" id="timerText">${formatTime(ex.endAt-Date.now())}</div>
+        </div>
+        <div class="card" style="padding:16px;">
+          <div class="flex-between" style="margin-bottom:10px;">
+            <strong style="font-size:13.5px;">Navigasi Soal</strong>
+            <span style="font-size:12px;color:var(--muted);">${answered}/${ex.order.length} terjawab</span>
+          </div>
+          <div class="nav-grid">
+            ${ex.order.map((qidx,i)=>{
+              let cls='nav-cell';
+              if(ex.answers[qidx]) cls+=' answered';
+              if(ex.doubt[qidx]) cls+=' doubt';
+              if(i===ex.current) cls+=' current';
+              return `<div class="${cls}" onclick="jumpQ(${i})">${i+1}</div>`;
+            }).join('')}
+          </div>
+          <div class="hint">🟩 Terjawab &nbsp; 🟨 Ragu-ragu &nbsp; ⬜ Belum dijawab</div>
+          <button class="btn btn-danger" style="width:100%;margin-top:14px;" onclick="confirmFinish()">Kumpulkan Sekarang</button>
+        </div>
+      </div>
+    </div>`;
+}
+function chooseAnswer(qid, letter){ state.exam.answers[qid] = letter; render(); }
+function toggleDoubt(qid){ state.exam.doubt[qid] = !state.exam.doubt[qid]; render(); }
+function moveQ(delta){ state.exam.current = Math.min(state.exam.order.length-1, Math.max(0, state.exam.current+delta)); render(); }
+function jumpQ(i){ state.exam.current = i; render(); }
+function confirmFinish(){
+  const answered = Object.keys(state.exam.answers).length;
+  const total = state.exam.order.length;
+  if(confirm(`Anda telah menjawab ${answered} dari ${total} soal. Yakin ingin mengumpulkan ujian sekarang?`)){
+    finishExam(false);
+  }
+}
+async function finishExam(autoSubmit){
+  clearInterval(timerInterval);
+  const ex = state.exam;
+  const jawaban = {};
+  Object.entries(ex.answers).forEach(([qid,L])=>{ jawaban[qid]=L; });
+  let res, error;
+  try{
+    const r = await sb.rpc('submit_ujian', {
+      p_nama: state.siswa.nama, p_kelas: state.siswa.kelas, p_absen: state.siswa.absen,
+      p_jawaban: jawaban, p_waktu_mulai: ex.waktuMulai, p_auto_submit: autoSubmit
+    });
+    res = r.data; error = r.error;
+  }catch(e){ error = e; }
+  if(error){ toast('Gagal mengirim hasil ke server: '+(error.message||error)); return; }
+  state.lastResult = res;
+  state.exam = null;
+  state.view = 'siswa-result';
+  render();
+}
+
+/* ===================== SISWA: RESULT ===================== */
+function renderSiswaResult(main, right){
+  right.innerHTML = `<span class="pill">${state.siswa.nama}</span>`;
+  const r = state.lastResult;
+  const materiKeys = Object.keys(r.materiStat);
+  main.innerHTML = `
+    <div class="card" style="text-align:center;max-width:520px;margin:0 auto 20px;">
+      <h2 style="margin-bottom:4px;">Ujian Selesai${r.autoSubmit? ' (Waktu Habis)':''}</h2>
+      <p class="desc">${escapeHtml(r.nama)} — Kelas ${escapeHtml(r.kelas)}</p>
+      <div class="stat-grid" style="margin-top:18px;">
+        <div class="stat-box"><div class="v">${r.score}</div><div class="l">Nilai Akhir</div></div>
+        <div class="stat-box"><div class="v">${r.correct}</div><div class="l">Jawaban Benar</div></div>
+        <div class="stat-box"><div class="v">${r.total-r.correct}</div><div class="l">Jawaban Salah</div></div>
+        <div class="stat-box"><div class="v">${r.total}</div><div class="l">Total Soal</div></div>
+      </div>
+    </div>
+    <div class="card" style="max-width:600px;margin:0 auto 20px;">
+      <h3 style="margin-top:0;">Hasil per Materi</h3>
+      ${materiKeys.map(m=>{
+        const st = r.materiStat[m]; const pct = Math.round(st.correct/st.total*100);
+        return `<div class="materi-row"><div class="name">${escapeHtml(m)}</div><div class="materi-bar"><div style="width:${pct}%"></div></div><div class="pct">${pct}%</div></div>`;
+      }).join('')}
+    </div>
+    ${(r.tampilkanHasil && r.detail && r.detail.length) ? `
+    <div class="card" style="max-width:700px;margin:0 auto 20px;">
+      <h3 style="margin-top:0;">Pembahasan Jawaban</h3>
+      ${r.detail.map((d,i)=>`
+        <div class="review-box ${d.isCorrect?'correct':'wrong'}">
+          <div style="font-weight:600;margin-bottom:6px;">${i+1}. ${escapeHtml(d.soal)}</div>
+          <div style="font-size:13.5px;">Jawaban Anda: <strong>${d.given? d.given+' - '+escapeHtml((d.options.find(o=>o.L===d.given)||{}).text||''):'(tidak dijawab)'}</strong></div>
+          ${!d.isCorrect? `<div style="font-size:13.5px;color:var(--success);">Kunci: <strong>${d.kunci} - ${escapeHtml((d.options.find(o=>o.L===d.kunci)||{}).text||'')}</strong></div>`:''}
+        </div>`).join('')}
+    </div>` : ''}
+    <div style="text-align:center;">
+      <button class="btn btn-emerald" onclick="state.view='home';render();">Kembali ke Beranda</button>
+    </div>`;
+}
+
+/* ===================== GURU: LOGIN (Supabase Auth: email + password) ===================== */
+function renderGuruLogin(main, right){
+  topRightHome(right);
+  main.innerHTML = `
+    <button class="back-link" onclick="goto('home')">← Kembali</button>
+    <div class="card" style="max-width:420px;margin:0 auto;">
+      <h2>Masuk sebagai Guru / Admin</h2>
+      <p class="desc">Gunakan email &amp; password akun guru yang sudah dibuat di Supabase Dashboard
+      (Authentication &gt; Users). Lihat README.md jika belum membuat akun.</p>
+      <label>Email</label>
+      <input type="text" id="inEmail" placeholder="guru@sekolah.id">
+      <label>Password</label>
+      <input type="password" id="inPassword" placeholder="••••••••">
+      <div class="form-actions">
+        <button class="btn btn-emerald" onclick="doLogin()">Masuk →</button>
+      </div>
+    </div>`;
+}
+async function doLogin(){
+  const email = document.getElementById('inEmail').value.trim();
+  const password = document.getElementById('inPassword').value;
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if(error){ toast(error.message || 'Email/password salah.'); return; }
+  state.isAdmin = true;
+  state.view = 'guru-dashboard';
+  state.guruTab = 'soal';
+  await loadAdminSoal();
+  render();
+}
+
+/* ===================== GURU: DASHBOARD ===================== */
+async function renderGuruDashboard(main, right){
+  right.innerHTML = `<span class="pill">Mode Guru/Admin</span> <button class="btn btn-outline small-btn" onclick="logoutGuru()">Keluar</button>`;
+  main.innerHTML = `
+    <button class="back-link" onclick="goto('home')">← Kembali ke Beranda</button>
+    <div class="tabs">
+      <button class="tab ${state.guruTab==='soal'?'active':''}" onclick="setGuruTab('soal')">Kelola Soal</button>
+      <button class="tab ${state.guruTab==='pengaturan'?'active':''}" onclick="setGuruTab('pengaturan')">Pengaturan Ujian</button>
+      <button class="tab ${state.guruTab==='rekap'?'active':''}" onclick="setGuruTab('rekap')">Rekap Nilai</button>
+      <button class="tab ${state.guruTab==='analisis'?'active':''}" onclick="setGuruTab('analisis')">Analisis Materi</button>
+    </div>
+    <div id="guruContent"><div class="empty">Memuat...</div></div>`;
+
+  if(state.guruTab==='soal'){ await loadAdminSoal(); document.getElementById('guruContent').innerHTML = tplKelolaSoal(); }
+  if(state.guruTab==='pengaturan'){ document.getElementById('guruContent').innerHTML = tplPengaturan(); }
+  if(state.guruTab==='rekap'){ await loadAdminHasil(); document.getElementById('guruContent').innerHTML = tplRekap(); }
+  if(state.guruTab==='analisis'){ await loadAdminHasil(); document.getElementById('guruContent').innerHTML = tplAnalisis(); }
+}
+function setGuruTab(t){ state.guruTab = t; renderGuruDashboard(document.getElementById('main'), document.getElementById('topbarRight')); }
+async function logoutGuru(){ await sb.auth.signOut(); state.isAdmin=false; state.view='home'; render(); }
+
+async function loadAdminSoal(){
+  const { data, error } = await sb.from('soal').select('*').order('id', { ascending:true });
+  if(error){ toast('Gagal memuat soal: '+error.message); state.soalAdmin=[]; return; }
+  state.soalAdmin = data || [];
+}
+async function loadAdminHasil(){
+  const { data, error } = await sb.from('hasil').select('*').order('waktu_selesai', { ascending:false });
+  if(error){ toast('Gagal memuat rekap: '+error.message); state.hasilAdmin=[]; return; }
+  state.hasilAdmin = data || [];
+}
+
+/* ---- Kelola Soal ---- */
+function tplKelolaSoal(){
+  return `
+    <div class="card">
+      <div class="flex-between">
+        <div>
+          <h2>Bank Soal (${state.soalAdmin.length})</h2>
+          <p class="desc">Impor soal dari file .csv, atau tambah/edit soal secara manual.</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-ghost small-btn" onclick="downloadTemplate()">Unduh Template CSV</button>
+          <button class="btn btn-emerald small-btn" onclick="openAddQuestion()">+ Tambah Soal</button>
+        </div>
+      </div>
+      <label>Impor Soal (file .csv, kolom: materi,soal,A,B,C,D,E,kunci)</label>
+      <input type="file" id="csvFile" accept=".csv,.txt" onchange="handleCsvFile(event)">
+      <div class="hint">Baris pertama dianggap header. Kolom E boleh kosong jika hanya 4 pilihan.</div>
+      <div class="form-actions">
+        <button class="btn btn-danger small-btn" onclick="clearAllQuestions()">Hapus Semua Soal</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">Daftar Soal</h3>
+      ${state.soalAdmin.length===0 ? '<div class="empty">Belum ada soal.</div>' :
+        state.soalAdmin.map((q,i)=>`
+        <div class="qlist-item">
+          <div>
+            <div class="n">${i+1}. <span class="badge badge-gold">${escapeHtml(q.materi||'-')}</span></div>
+            <div style="margin-top:4px;">${escapeHtml(q.soal)}</div>
+            <div class="hint">Kunci jawaban: ${q.kunci}</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            <button class="btn btn-ghost small-btn" onclick="openEditQuestion(${q.id})">Edit</button>
+            <button class="btn btn-danger small-btn" onclick="deleteQuestion(${q.id})">Hapus</button>
+          </div>
+        </div>`).join('')}
+    </div>
+    ${state.editingQuestion !== null ? tplQuestionModal() : ''}
+  `;
+}
+function downloadTemplate(){
+  const header = 'materi,soal,A,B,C,D,E,kunci\n';
+  const example = 'Fiqih,"Contoh: Rukun Islam yang pertama adalah...",Syahadat,Shalat,Zakat,Puasa,Haji,A\n';
+  downloadFile('template-soal-mapsi.csv', header+example, 'text/csv');
+}
+function downloadFile(filename, content, type){
+  const blob = new Blob([content], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+function parseCsvLine(line){
+  const out = []; let cur=''; let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c = line[i];
+    if(c==='"'){ inQ = !inQ; continue; }
+    if(c===',' && !inQ){ out.push(cur); cur=''; continue; }
+    cur+=c;
+  }
+  out.push(cur);
+  return out;
+}
+function parseCsv(text){
+  const lines = text.split(/\r?\n/).filter(l=>l.trim().length>0);
+  const rows = lines.map(parseCsvLine);
+  if(rows.length && /materi/i.test(rows[0][0]||'')) rows.shift();
+  return rows.filter(r=>r.length>=8 && r[1]).map(r=>({
+    materi: (r[0]||'Umum').trim(), soal:(r[1]||'').trim(),
+    opsi_a:(r[2]||'').trim(), opsi_b:(r[3]||'').trim(), opsi_c:(r[4]||'').trim(),
+    opsi_d:(r[5]||'').trim(), opsi_e:(r[6]||'').trim(), kunci:(r[7]||'').trim().toUpperCase()
+  }));
+}
+async function handleCsvFile(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const text = await file.text();
+  const parsed = parseCsv(text);
+  if(!parsed.length){ toast('Tidak ada baris soal valid ditemukan di file.'); return; }
+  const { error } = await sb.from('soal').insert(parsed);
+  if(error){ toast('Gagal impor: '+error.message); return; }
+  toast(`${parsed.length} soal berhasil diimpor.`);
+  await loadAdminSoal();
+  document.getElementById('guruContent').innerHTML = tplKelolaSoal();
+  const { data: pub } = await sb.from('soal_public').select('*').order('id', { ascending:true });
+  state.questions = (pub||[]).map(r=>({ id:r.id, materi:r.materi, soal:r.soal,
+    opsi: mapOpsi(r) }));
+}
+async function clearAllQuestions(){
+  if(!confirm('Yakin ingin menghapus SEMUA soal? Tindakan ini tidak bisa dibatalkan.')) return;
+  const { error } = await sb.from('soal').delete().neq('id', -1);
+  if(error){ toast('Gagal menghapus: '+error.message); return; }
+  await loadAdminSoal();
+  document.getElementById('guruContent').innerHTML = tplKelolaSoal();
+  state.questions = [];
+}
+function openAddQuestion(){ state.editingQuestion = {id:null, materi:'', soal:'', A:'',B:'',C:'',D:'',E:'', kunci:'A'}; document.getElementById('guruContent').innerHTML = tplKelolaSoal(); }
+function openEditQuestion(id){
+  const q = state.soalAdmin.find(x=>x.id===id);
+  state.editingQuestion = {id:q.id, materi:q.materi, soal:q.soal, A:q.opsi_a, B:q.opsi_b, C:q.opsi_c, D:q.opsi_d, E:q.opsi_e, kunci:q.kunci};
+  document.getElementById('guruContent').innerHTML = tplKelolaSoal();
+}
+async function deleteQuestion(id){
+  if(!confirm('Hapus soal ini?')) return;
+  const { error } = await sb.from('soal').delete().eq('id', id);
+  if(error){ toast('Gagal menghapus: '+error.message); return; }
+  await loadAdminSoal();
+  document.getElementById('guruContent').innerHTML = tplKelolaSoal();
+}
+function tplQuestionModal(){
+  const q = state.editingQuestion;
+  return `
+    <div class="card" style="border-color:var(--emerald);">
+      <h3 style="margin-top:0;">${q.id? 'Edit Soal':'Tambah Soal'}</h3>
+      <label>Materi</label>
+      <input type="text" id="eqMateri" value="${escapeAttr(q.materi)}" placeholder="Contoh: Fiqih">
+      <label>Pertanyaan</label>
+      <textarea id="eqSoal" rows="2">${escapeHtml(q.soal)}</textarea>
+      ${['A','B','C','D','E'].map(L=>`
+        <label>Pilihan ${L} ${L==='E'?'(opsional)':''}</label>
+        <input type="text" id="eq${L}" value="${escapeAttr(q[L]||'')}">
+      `).join('')}
+      <label>Kunci Jawaban</label>
+      <select id="eqKunci">
+        ${['A','B','C','D','E'].map(L=>`<option value="${L}" ${q.kunci===L?'selected':''}>${L}</option>`).join('')}
+      </select>
+      <div class="form-actions">
+        <button class="btn btn-emerald" onclick="saveEditedQuestion()">Simpan Soal</button>
+        <button class="btn btn-ghost" onclick="state.editingQuestion=null;document.getElementById('guruContent').innerHTML=tplKelolaSoal();">Batal</button>
+      </div>
+    </div>`;
+}
+async function saveEditedQuestion(){
+  const payload = {
+    materi: document.getElementById('eqMateri').value.trim() || 'Umum',
+    soal: document.getElementById('eqSoal').value.trim(),
+    opsi_a: document.getElementById('eqA').value.trim(),
+    opsi_b: document.getElementById('eqB').value.trim(),
+    opsi_c: document.getElementById('eqC').value.trim(),
+    opsi_d: document.getElementById('eqD').value.trim(),
+    opsi_e: document.getElementById('eqE').value.trim(),
+    kunci: document.getElementById('eqKunci').value,
+  };
+  if(!payload.soal || !payload.opsi_a || !payload.opsi_b){ toast('Pertanyaan dan minimal pilihan A & B wajib diisi.'); return; }
+  let error;
+  if(state.editingQuestion.id){
+    ({ error } = await sb.from('soal').update(payload).eq('id', state.editingQuestion.id));
+  } else {
+    ({ error } = await sb.from('soal').insert(payload));
+  }
+  if(error){ toast('Gagal menyimpan: '+error.message); return; }
+  state.editingQuestion = null;
+  toast('Soal disimpan.');
+  await loadAdminSoal();
+  document.getElementById('guruContent').innerHTML = tplKelolaSoal();
+  const { data: pub } = await sb.from('soal_public').select('*').order('id', { ascending:true });
+  state.questions = (pub||[]).map(r=>({ id:r.id, materi:r.materi, soal:r.soal,
+    opsi: mapOpsi(r) }));
+}
+
+/* ---- Pengaturan ---- */
+function tplPengaturan(){
+  const s = state.settings;
+  return `
+    <div class="card" style="max-width:520px;">
+      <h2>Pengaturan Ujian</h2>
+      <label>Durasi Ujian (menit)</label>
+      <input type="number" id="setDurasi" value="${s.durasiMenit}" min="1">
+      <label style="display:flex;align-items:center;gap:8px;margin-top:16px;">
+        <input type="checkbox" id="setAcakSoal" ${s.acakSoal?'checked':''} style="width:auto;"> Acak urutan soal per siswa
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="setAcakPilihan" ${s.acakPilihan?'checked':''} style="width:auto;"> Acak urutan pilihan jawaban
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="setTampilHasil" ${s.tampilkanHasil?'checked':''} style="width:auto;"> Tampilkan pembahasan jawaban ke siswa setelah selesai
+      </label>
+      <div class="hint">Untuk mengganti password admin, gunakan menu Authentication &gt; Users di Supabase Dashboard.</div>
+      <div class="form-actions">
+        <button class="btn btn-emerald" onclick="saveSettingsForm()">Simpan Pengaturan</button>
+      </div>
+    </div>`;
+}
+async function saveSettingsForm(){
+  const payload = {
+    durasi_menit: parseInt(document.getElementById('setDurasi').value)||90,
+    acak_soal: document.getElementById('setAcakSoal').checked,
+    acak_pilihan: document.getElementById('setAcakPilihan').checked,
+    tampilkan_hasil: document.getElementById('setTampilHasil').checked,
+  };
+  const { error } = await sb.from('pengaturan').update(payload).eq('id', 1);
+  if(error){ toast('Gagal menyimpan: '+error.message); return; }
+  state.settings = {
+    durasiMenit: payload.durasi_menit, acakSoal: payload.acak_soal,
+    acakPilihan: payload.acak_pilihan, tampilkanHasil: payload.tampilkan_hasil,
+  };
+  toast('Pengaturan tersimpan.');
+  document.getElementById('guruContent').innerHTML = tplPengaturan();
+}
+
+/* ---- Rekap Nilai ---- */
+function tplRekap(){
+  const results = state.hasilAdmin || [];
+  return `
+    <div class="card">
+      <div class="flex-between">
+        <div>
+          <h2>Rekap Nilai (${results.length} peserta)</h2>
+          <p class="desc">Data hasil ujian seluruh siswa yang telah mengumpulkan, tersimpan terpusat di Supabase.</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost small-btn" onclick="refreshRekap()">↻ Muat Ulang</button>
+          <button class="btn btn-gold small-btn" onclick="exportRekapCsv()">Ekspor CSV</button>
+        </div>
+      </div>
+      ${results.length===0 ? '<div class="empty">Belum ada siswa yang mengerjakan ujian.</div>' : `
+      <table>
+        <thead><tr><th>Nama</th><th>Kelas</th><th>Nilai</th><th>Benar/Total</th><th>Waktu Selesai</th><th></th></tr></thead>
+        <tbody>
+          ${results.map(r=>`
+            <tr>
+              <td>${escapeHtml(r.nama)}</td>
+              <td>${escapeHtml(r.kelas)}</td>
+              <td><span class="badge ${r.score>=70?'badge-green':'badge-red'}">${r.score}</span></td>
+              <td>${r.correct}/${r.total}</td>
+              <td>${new Date(parseInt(r.waktu_selesai)).toLocaleString('id-ID')}</td>
+              <td><button class="btn btn-danger small-btn" onclick="deleteResultRow(${r.id})">Hapus</button></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`}
+    </div>`;
+}
+async function refreshRekap(){ await loadAdminHasil(); document.getElementById('guruContent').innerHTML = tplRekap(); }
+async function deleteResultRow(id){
+  if(!confirm('Hapus hasil ujian siswa ini dari rekap?')) return;
+  const { error } = await sb.from('hasil').delete().eq('id', id);
+  if(error){ toast('Gagal menghapus: '+error.message); return; }
+  await refreshRekap();
+}
+function exportRekapCsv(){
+  const results = state.hasilAdmin || [];
+  let csv = 'Nama,Kelas,Absen,Nilai,Benar,Total,Waktu Selesai\n';
+  results.forEach(r=>{
+    csv += `"${r.nama}","${r.kelas}","${r.absen||''}",${r.score},${r.correct},${r.total},"${new Date(parseInt(r.waktu_selesai)).toLocaleString('id-ID')}"\n`;
+  });
+  downloadFile('rekap-nilai-mapsi.csv', csv, 'text/csv');
+}
+
+/* ---- Analisis Materi ---- */
+function tplAnalisis(){
+  const results = state.hasilAdmin || [];
+  if(!results.length){
+    return `<div class="card"><h2>Analisis per Materi</h2><div class="empty">Belum ada data hasil ujian untuk dianalisis.</div></div>`;
+  }
+  const agg = {};
+  let totalScore = 0;
+  results.forEach(r=>{
+    totalScore += r.score;
+    Object.entries(r.materi_stat||{}).forEach(([m,st])=>{
+      if(!agg[m]) agg[m] = {correct:0,total:0};
+      agg[m].correct += st.correct; agg[m].total += st.total;
+    });
+  });
+  const rows = Object.entries(agg).map(([m,st])=>({materi:m, pct: st.total? Math.round(st.correct/st.total*100):0, total:st.total}))
+    .sort((a,b)=>a.pct-b.pct);
+  const rataRata = Math.round(totalScore/results.length);
+  const terlemah = rows[0];
+  return `
+    <div class="stat-grid">
+      <div class="stat-box"><div class="v">${results.length}</div><div class="l">Peserta Ujian</div></div>
+      <div class="stat-box"><div class="v">${rataRata}</div><div class="l">Rata-rata Nilai</div></div>
+      <div class="stat-box"><div class="v">${rows.length}</div><div class="l">Jumlah Materi</div></div>
+      <div class="stat-box"><div class="v" style="font-size:16px;">${terlemah? escapeHtml(terlemah.materi):'-'}</div><div class="l">Materi Terlemah</div></div>
+    </div>
+    <div class="card">
+      <h2>Persentase Ketercapaian per Materi</h2>
+      <p class="desc">Diurutkan dari materi dengan persentase jawaban benar paling rendah — jadi prioritas untuk diulang/dibahas kembali di kelas.</p>
+      ${rows.map(r=>`
+        <div class="materi-row">
+          <div class="name">${escapeHtml(r.materi)}</div>
+          <div class="materi-bar"><div style="width:${r.pct}%;background:${r.pct<60?'var(--danger)':r.pct<80?'var(--gold)':'var(--emerald)'}"></div></div>
+          <div class="pct">${r.pct}%</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ===================== UTIL ===================== */
+function toast(msg){
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 4000);
+}
+function escapeHtml(str){
+  return String(str??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(str){ return escapeHtml(str); }
+
+init();
+</script>
+</body>
+</html>
