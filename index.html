@@ -126,6 +126,14 @@ tr:hover td{background:#FBF8EC;}
 .review-box{border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
 .review-box.correct{border-color:var(--success);background:#F3FAF6;}
 .review-box.wrong{border-color:var(--danger);background:#FBF2F1;}
+.q-image{max-width:100%;max-height:320px;border-radius:12px;margin-bottom:16px;display:block;border:1px solid var(--line);}
+.opt-image{max-width:220px;max-height:160px;border-radius:8px;margin-bottom:8px;display:block;border:1px solid var(--line);}
+.review-image{max-width:220px;max-height:160px;border-radius:8px;margin:6px 0;display:block;border:1px solid var(--line);}
+.img-field{border:1.5px dashed var(--line);border-radius:12px;padding:12px;margin-bottom:14px;}
+.img-field-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px;}
+.img-field-row input[type=text]{flex:1;min-width:160px;}
+.img-preview{max-width:120px;max-height:90px;border-radius:8px;border:1px solid var(--line);display:block;margin-top:8px;}
+.img-uploading{font-size:12px;color:var(--muted);}
 footer{text-align:center;padding:20px;font-size:12px;color:var(--muted);}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -146,6 +154,7 @@ footer{text-align:center;padding:20px;font-size:12px;color:var(--muted);}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 /* ======================================================================
    KONFIGURASI SUPABASE — WAJIB DIISI
@@ -161,6 +170,14 @@ function mapOpsi(r){
   const out = {};
   ['A','B','C','D','E'].forEach(L=>{
     const v = r['opsi_'+L.toLowerCase()];
+    if(v) out[L] = v;
+  });
+  return out;
+}
+function mapOpsiImg(r){
+  const out = {};
+  ['A','B','C','D','E'].forEach(L=>{
+    const v = r['gambar_'+L.toLowerCase()];
     if(v) out[L] = v;
   });
   return out;
@@ -197,8 +214,8 @@ async function init(){
     ]);
     if(e1) throw e1;
     state.questions = (soalRows||[]).map(r=>({
-      id: r.id, materi: r.materi, soal: r.soal,
-      opsi: mapOpsi(r)
+      id: r.id, materi: r.materi, soal: r.soal, gambar: r.gambar_soal || null,
+      opsi: mapOpsi(r), opsiImg: mapOpsiImg(r)
     }));
     if(setRow){
       state.settings = {
@@ -354,10 +371,14 @@ function renderExam(main, right){
           </div>
           <div class="progress-bar"><div style="width:${(answered/ex.order.length*100).toFixed(0)}%"></div></div>
           <div class="q-text">${ex.current+1}. ${escapeHtml(q.soal)}</div>
+          ${q.gambar ? `<img class="q-image" src="${escapeAttr(q.gambar)}" alt="Gambar soal" loading="lazy">` : ''}
           ${letters.map(L=>`
             <div class="opt ${ex.answers[qid]===L?'selected':''}" onclick="chooseAnswer(${qid},'${L}')">
               <div class="letter">${L}</div>
-              <div>${escapeHtml(q.opsi[L])}</div>
+              <div>
+                ${(q.opsiImg && q.opsiImg[L]) ? `<img class="opt-image" src="${escapeAttr(q.opsiImg[L])}" alt="Gambar pilihan ${L}" loading="lazy">` : ''}
+                ${escapeHtml(q.opsi[L])}
+              </div>
             </div>`).join('')}
           <div class="exam-nav-buttons">
             <div style="display:flex;gap:8px;">
@@ -454,12 +475,18 @@ function renderSiswaResult(main, right){
     ${(r.tampilkanHasil && r.detail && r.detail.length) ? `
     <div class="card" style="max-width:700px;margin:0 auto 20px;">
       <h3 style="margin-top:0;">Pembahasan Jawaban</h3>
-      ${r.detail.map((d,i)=>`
+      ${r.detail.map((d,i)=>{
+        const givenOpt = d.options.find(o=>o.L===d.given) || {};
+        const kunciOpt = d.options.find(o=>o.L===d.kunci) || {};
+        return `
         <div class="review-box ${d.isCorrect?'correct':'wrong'}">
           <div style="font-weight:600;margin-bottom:6px;">${i+1}. ${escapeHtml(d.soal)}</div>
-          <div style="font-size:13.5px;">Jawaban Anda: <strong>${d.given? d.given+' - '+escapeHtml((d.options.find(o=>o.L===d.given)||{}).text||''):'(tidak dijawab)'}</strong></div>
-          ${!d.isCorrect? `<div style="font-size:13.5px;color:var(--success);">Kunci: <strong>${d.kunci} - ${escapeHtml((d.options.find(o=>o.L===d.kunci)||{}).text||'')}</strong></div>`:''}
-        </div>`).join('')}
+          ${d.gambarSoal ? `<img class="review-image" src="${escapeAttr(d.gambarSoal)}" alt="Gambar soal" loading="lazy">` : ''}
+          <div style="font-size:13.5px;">Jawaban Anda: <strong>${d.given? d.given+' - '+escapeHtml(givenOpt.text||''):'(tidak dijawab)'}</strong></div>
+          ${givenOpt.img ? `<img class="review-image" src="${escapeAttr(givenOpt.img)}" alt="Gambar jawaban Anda" loading="lazy">` : ''}
+          ${!d.isCorrect? `<div style="font-size:13.5px;color:var(--success);">Kunci: <strong>${d.kunci} - ${escapeHtml(kunciOpt.text||'')}</strong></div>${kunciOpt.img?`<img class="review-image" src="${escapeAttr(kunciOpt.img)}" alt="Gambar kunci jawaban" loading="lazy">`:''}`:''}
+        </div>`;
+      }).join('')}
     </div>` : ''}
     <div style="text-align:center;">
       <button class="btn btn-emerald" onclick="state.view='home';render();">Kembali ke Beranda</button>
@@ -535,16 +562,16 @@ function tplKelolaSoal(){
       <div class="flex-between">
         <div>
           <h2>Bank Soal (${state.soalAdmin.length})</h2>
-          <p class="desc">Impor soal dari file .csv, atau tambah/edit soal secara manual.</p>
+          <p class="desc">Impor soal dari file Excel (.xlsx) hasil edit Anda, atau tambah/edit soal secara manual.</p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-ghost small-btn" onclick="downloadTemplate()">Unduh Template CSV</button>
+          <button class="btn btn-ghost small-btn" onclick="downloadTemplate()">Unduh Template Excel (.xlsx)</button>
           <button class="btn btn-emerald small-btn" onclick="openAddQuestion()">+ Tambah Soal</button>
         </div>
       </div>
-      <label>Impor Soal (file .csv, kolom: materi,soal,A,B,C,D,E,kunci)</label>
-      <input type="file" id="csvFile" accept=".csv,.txt" onchange="handleCsvFile(event)">
-      <div class="hint">Baris pertama dianggap header. Kolom E boleh kosong jika hanya 4 pilihan.</div>
+      <label>Impor Soal (upload file Excel .xlsx hasil edit Anda, kolom: materi, soal, A, B, C, D, E, kunci — bisa juga .csv). Kolom gambar_soal/gambar_a..e (opsional, isi link URL gambar) juga didukung.</label>
+      <input type="file" id="csvFile" accept=".csv,.txt,.xlsx,.xls" onchange="handleImportFile(event)">
+      <div class="hint">Baris pertama dianggap header. Kolom E boleh kosong jika hanya 4 pilihan. Kalau file Excel Anda punya beberapa sheet, yang dibaca adalah sheet bernama "Soal" (atau sheet pertama jika tidak ada sheet bernama itu).</div>
       <div class="form-actions">
         <button class="btn btn-danger small-btn" onclick="clearAllQuestions()">Hapus Semua Soal</button>
       </div>
@@ -557,7 +584,7 @@ function tplKelolaSoal(){
           <div>
             <div class="n">${i+1}. <span class="badge badge-gold">${escapeHtml(q.materi||'-')}</span></div>
             <div style="margin-top:4px;">${escapeHtml(q.soal)}</div>
-            <div class="hint">Kunci jawaban: ${q.kunci}</div>
+            <div class="hint">Kunci jawaban: ${q.kunci} ${(q.gambar_soal||q.gambar_a||q.gambar_b||q.gambar_c||q.gambar_d||q.gambar_e) ? '&nbsp;📷 Punya gambar' : ''}</div>
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;">
             <button class="btn btn-ghost small-btn" onclick="openEditQuestion(${q.id})">Edit</button>
@@ -568,9 +595,14 @@ function tplKelolaSoal(){
   `;
 }
 function downloadTemplate(){
-  const header = 'materi,soal,A,B,C,D,E,kunci\n';
-  const example = 'Fiqih,"Contoh: Rukun Islam yang pertama adalah...",Syahadat,Shalat,Zakat,Puasa,Haji,A\n';
-  downloadFile('template-soal-mapsi.csv', header+example, 'text/csv');
+  const header = ['materi','soal','A','B','C','D','E','kunci','gambar_soal','gambar_a','gambar_b','gambar_c','gambar_d','gambar_e'];
+  const contoh1 = ['Fiqih','Contoh: Rukun Islam yang pertama adalah...','Syahadat','Shalat','Zakat','Puasa','Haji','A','','','','','',''];
+  const contoh2 = ['Akhlak','Contoh soal Benar-Salah: Membantu teman yang kesulitan termasuk akhlak terpuji.','Benar','Salah','','','','A','','','','','',''];
+  const ws = XLSX.utils.aoa_to_sheet([header, contoh1, contoh2]);
+  ws['!cols'] = [{wch:20},{wch:50},{wch:20},{wch:20},{wch:20},{wch:20},{wch:20},{wch:8},{wch:26},{wch:26},{wch:26},{wch:26},{wch:26},{wch:26}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Soal');
+  XLSX.writeFile(wb, 'template-soal-mapsi.xlsx');
 }
 function downloadFile(filename, content, type){
   const blob = new Blob([content], {type});
@@ -590,21 +622,42 @@ function parseCsvLine(line){
   out.push(cur);
   return out;
 }
+function rowsToQuestions(rows){
+  if(rows.length && /materi/i.test(String(rows[0][0]||''))) rows = rows.slice(1);
+  return rows.filter(r=>r && r.length>=2 && String(r[1]||'').trim()).map(r=>({
+    materi: String(r[0]||'Umum').trim(), soal: String(r[1]||'').trim(),
+    opsi_a: String(r[2]||'').trim(), opsi_b: String(r[3]||'').trim(), opsi_c: String(r[4]||'').trim(),
+    opsi_d: String(r[5]||'').trim(), opsi_e: String(r[6]||'').trim(), kunci: String(r[7]||'').trim().toUpperCase(),
+    gambar_soal: String(r[8]||'').trim() || null, gambar_a: String(r[9]||'').trim() || null,
+    gambar_b: String(r[10]||'').trim() || null, gambar_c: String(r[11]||'').trim() || null,
+    gambar_d: String(r[12]||'').trim() || null, gambar_e: String(r[13]||'').trim() || null,
+  }));
+}
 function parseCsv(text){
   const lines = text.split(/\r?\n/).filter(l=>l.trim().length>0);
   const rows = lines.map(parseCsvLine);
-  if(rows.length && /materi/i.test(rows[0][0]||'')) rows.shift();
-  return rows.filter(r=>r.length>=8 && r[1]).map(r=>({
-    materi: (r[0]||'Umum').trim(), soal:(r[1]||'').trim(),
-    opsi_a:(r[2]||'').trim(), opsi_b:(r[3]||'').trim(), opsi_c:(r[4]||'').trim(),
-    opsi_d:(r[5]||'').trim(), opsi_e:(r[6]||'').trim(), kunci:(r[7]||'').trim().toUpperCase()
-  }));
+  return rowsToQuestions(rows);
 }
-async function handleCsvFile(evt){
+function parseXlsx(arrayBuffer){
+  const wb = XLSX.read(arrayBuffer, { type:'array' });
+  const sheetName = wb.SheetNames.includes('Soal') ? 'Soal' : wb.SheetNames[0];
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header:1, defval:'' });
+  return rowsToQuestions(rows);
+}
+async function handleImportFile(evt){
   const file = evt.target.files[0];
   if(!file) return;
-  const text = await file.text();
-  const parsed = parseCsv(text);
+  const isExcel = /\.(xlsx|xls)$/i.test(file.name);
+  let parsed;
+  try{
+    if(isExcel){
+      const buf = await file.arrayBuffer();
+      parsed = parseXlsx(buf);
+    } else {
+      const text = await file.text();
+      parsed = parseCsv(text);
+    }
+  }catch(e){ toast('Gagal membaca file: '+(e.message||e)); return; }
   if(!parsed.length){ toast('Tidak ada baris soal valid ditemukan di file.'); return; }
   const { error } = await sb.from('soal').insert(parsed);
   if(error){ toast('Gagal impor: '+error.message); return; }
@@ -612,8 +665,8 @@ async function handleCsvFile(evt){
   await loadAdminSoal();
   document.getElementById('guruContent').innerHTML = tplKelolaSoal();
   const { data: pub } = await sb.from('soal_public').select('*').order('id', { ascending:true });
-  state.questions = (pub||[]).map(r=>({ id:r.id, materi:r.materi, soal:r.soal,
-    opsi: mapOpsi(r) }));
+  state.questions = (pub||[]).map(r=>({ id:r.id, materi:r.materi, soal:r.soal, gambar:r.gambar_soal||null,
+    opsi: mapOpsi(r), opsiImg: mapOpsiImg(r) }));
 }
 async function clearAllQuestions(){
   if(!confirm('Yakin ingin menghapus SEMUA soal? Tindakan ini tidak bisa dibatalkan.')) return;
@@ -623,10 +676,15 @@ async function clearAllQuestions(){
   document.getElementById('guruContent').innerHTML = tplKelolaSoal();
   state.questions = [];
 }
-function openAddQuestion(){ state.editingQuestion = {id:null, materi:'', soal:'', A:'',B:'',C:'',D:'',E:'', kunci:'A'}; renderModal(); }
+function openAddQuestion(){
+  state.editingQuestion = {id:null, materi:'', soal:'', A:'',B:'',C:'',D:'',E:'', kunci:'A',
+    gambar:'', imgA:'', imgB:'', imgC:'', imgD:'', imgE:''};
+  renderModal();
+}
 function openEditQuestion(id){
   const q = state.soalAdmin.find(x=>x.id===id);
-  state.editingQuestion = {id:q.id, materi:q.materi, soal:q.soal, A:q.opsi_a, B:q.opsi_b, C:q.opsi_c, D:q.opsi_d, E:q.opsi_e, kunci:q.kunci};
+  state.editingQuestion = {id:q.id, materi:q.materi, soal:q.soal, A:q.opsi_a, B:q.opsi_b, C:q.opsi_c, D:q.opsi_d, E:q.opsi_e, kunci:q.kunci,
+    gambar:q.gambar_soal||'', imgA:q.gambar_a||'', imgB:q.gambar_b||'', imgC:q.gambar_c||'', imgD:q.gambar_d||'', imgE:q.gambar_e||''};
   renderModal();
 }
 function closeQuestionModal(){ state.editingQuestion = null; renderModal(); }
@@ -646,6 +704,60 @@ function renderModal(){
   root.innerHTML = tplQuestionModal();
   root.scrollTop = 0;
 }
+
+/* Satu blok input gambar dipakai berulang: untuk gambar soal & gambar
+   tiap pilihan (A-E). Guru bisa tempel link URL ATAU upload file --
+   dua-duanya mengisi kolom URL yang sama. */
+function imgFieldTpl(key, label, url){
+  const hasUrl = !!url;
+  return `
+    <div class="img-field">
+      <label style="margin-top:0;">${label}</label>
+      <div class="img-field-row">
+        <input type="text" id="eqImg${key}" value="${escapeAttr(url||'')}" placeholder="Tempel link gambar (URL)..." oninput="onImgUrlInput('${key}')">
+        <input type="file" accept="image/*" style="width:auto;" onchange="uploadGambar(event,'${key}')">
+        <button type="button" class="btn btn-ghost small-btn" onclick="clearImgField('${key}')">Hapus</button>
+      </div>
+      <img class="img-preview" id="eqImgPreview${key}" src="${escapeAttr(url||'')}" style="display:${hasUrl?'block':'none'};" onerror="this.style.display='none';">
+      <div class="img-uploading" id="eqImgStatus${key}"></div>
+    </div>`;
+}
+function onImgUrlInput(key){
+  const url = document.getElementById('eqImg'+key).value.trim();
+  const preview = document.getElementById('eqImgPreview'+key);
+  if(preview){ preview.src = url; preview.style.display = url ? 'block' : 'none'; }
+}
+function clearImgField(key){
+  const input = document.getElementById('eqImg'+key);
+  if(input) input.value = '';
+  const preview = document.getElementById('eqImgPreview'+key);
+  if(preview){ preview.src=''; preview.style.display='none'; }
+  const statusEl = document.getElementById('eqImgStatus'+key);
+  if(statusEl) statusEl.textContent = '';
+}
+async function uploadGambar(evt, key){
+  const file = evt.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ toast('File yang dipilih harus berupa gambar.'); return; }
+  const statusEl = document.getElementById('eqImgStatus'+key);
+  if(statusEl) statusEl.textContent = 'Mengunggah gambar...';
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
+  const path = `${key.toLowerCase()}-${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+  const { error } = await sb.storage.from('soal-images').upload(path, file, { upsert:true, cacheControl:'3600' });
+  if(error){
+    if(statusEl) statusEl.textContent = '';
+    toast('Gagal unggah gambar: '+error.message+' (pastikan bucket "soal-images" sudah dibuat lewat add_gambar.sql)');
+    return;
+  }
+  const { data } = sb.storage.from('soal-images').getPublicUrl(path);
+  const url = data.publicUrl;
+  const input = document.getElementById('eqImg'+key);
+  if(input) input.value = url;
+  const preview = document.getElementById('eqImgPreview'+key);
+  if(preview){ preview.src = url; preview.style.display = 'block'; }
+  if(statusEl) statusEl.textContent = 'Gambar berhasil diunggah.';
+}
+
 function tplQuestionModal(){
   const q = state.editingQuestion;
   return `
@@ -656,9 +768,11 @@ function tplQuestionModal(){
         <input type="text" id="eqMateri" value="${escapeAttr(q.materi)}" placeholder="Contoh: Fiqih">
         <label>Pertanyaan</label>
         <textarea id="eqSoal" rows="2">${escapeHtml(q.soal)}</textarea>
+        ${imgFieldTpl('Soal', 'Gambar Soal (opsional)', q.gambar)}
         ${['A','B','C','D','E'].map(L=>`
           <label>Pilihan ${L} ${L==='E'?'(opsional)':''}</label>
           <input type="text" id="eq${L}" value="${escapeAttr(q[L]||'')}">
+          ${imgFieldTpl(L, `Gambar Pilihan ${L} (opsional)`, q['img'+L])}
         `).join('')}
         <label>Kunci Jawaban</label>
         <select id="eqKunci">
@@ -681,6 +795,12 @@ async function saveEditedQuestion(){
     opsi_d: document.getElementById('eqD').value.trim(),
     opsi_e: document.getElementById('eqE').value.trim(),
     kunci: document.getElementById('eqKunci').value,
+    gambar_soal: document.getElementById('eqImgSoal').value.trim() || null,
+    gambar_a: document.getElementById('eqImgA').value.trim() || null,
+    gambar_b: document.getElementById('eqImgB').value.trim() || null,
+    gambar_c: document.getElementById('eqImgC').value.trim() || null,
+    gambar_d: document.getElementById('eqImgD').value.trim() || null,
+    gambar_e: document.getElementById('eqImgE').value.trim() || null,
   };
   if(!payload.soal || !payload.opsi_a || !payload.opsi_b){ toast('Pertanyaan dan minimal pilihan A & B wajib diisi.'); return; }
   let error;
@@ -696,8 +816,8 @@ async function saveEditedQuestion(){
   await loadAdminSoal();
   document.getElementById('guruContent').innerHTML = tplKelolaSoal();
   const { data: pub } = await sb.from('soal_public').select('*').order('id', { ascending:true });
-  state.questions = (pub||[]).map(r=>({ id:r.id, materi:r.materi, soal:r.soal,
-    opsi: mapOpsi(r) }));
+  state.questions = (pub||[]).map(r=>({ id:r.id, materi:r.materi, soal:r.soal, gambar:r.gambar_soal||null,
+    opsi: mapOpsi(r), opsiImg: mapOpsiImg(r) }));
 }
 
 /* ---- Pengaturan ---- */
