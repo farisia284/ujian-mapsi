@@ -372,11 +372,11 @@ function renderExam(main, right){
           <div class="progress-bar"><div style="width:${(answered/ex.order.length*100).toFixed(0)}%"></div></div>
           <div class="q-text">${ex.current+1}. ${escapeHtml(q.soal)}</div>
           ${q.gambar ? `<img class="q-image" src="${escapeAttr(q.gambar)}" alt="Gambar soal" loading="lazy">` : ''}
-          ${letters.map(L=>`
+          ${letters.map((L,idx)=>`
             <div class="opt ${ex.answers[qid]===L?'selected':''}" onclick="chooseAnswer(${qid},'${L}')">
-              <div class="letter">${L}</div>
+              <div class="letter">${LETTERS[idx]}</div>
               <div>
-                ${(q.opsiImg && q.opsiImg[L]) ? `<img class="opt-image" src="${escapeAttr(q.opsiImg[L])}" alt="Gambar pilihan ${L}" loading="lazy">` : ''}
+                ${(q.opsiImg && q.opsiImg[L]) ? `<img class="opt-image" src="${escapeAttr(q.opsiImg[L])}" alt="Gambar pilihan ${LETTERS[idx]}" loading="lazy">` : ''}
                 ${escapeHtml(q.opsi[L])}
               </div>
             </div>`).join('')}
