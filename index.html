@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ujian Online Mapsi</title>
+<title>MAPSI Training Center</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
@@ -143,14 +143,14 @@ footer{text-align:center;padding:20px;font-size:12px;color:var(--muted);}
 <div class="app-shell">
   <div class="topbar">
     <div class="brand">
-      <span class="title display">Ujian Online Mapsi</span>
-      <span class="sub">Sistem Ujian & Analisis Materi</span>
+      <span class="title display">MAPSI Training Center</span>
+      <span class="sub">Platform Latihan dan Persiapan Lomba MAPSI</span>
     </div>
     <div class="topbar-right" id="topbarRight"></div>
   </div>
   <main id="main"></main>
   <div id="modalRoot"></div>
-  <footer>Aplikasi ini tersambung ke server/database sungguhan — nilai dan soal tersimpan terpusat dan dapat diakses siswa dari perangkat mana pun selama alamat web ini bisa dijangkau.</footer>
+  <footer>Belajar hari ini, berprestasi esok hari. Terus berlatih, evaluasi hasilmu, dan jadilah peserta MAPSI yang semakin siap dan percaya diri.</footer>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -263,19 +263,19 @@ function renderHome(main, right){
   topRightHome(right);
   main.innerHTML = `
     <div class="hero">
-      <h1>Ujian Online Pendidikan Agama Islam (Mapsi)</h1>
-      <p>Kerjakan atau kelola ujian 150 soal dari jarak jauh. Data tersimpan terpusat di Supabase sehingga rekap nilai selalu lengkap dari perangkat mana pun.</p>
+      <h1>Selamat Datang di Ruang Latihan MAPSI</h1>
+      <p>Asah kemampuan, tambah wawasan, dan persiapkan dirimu untuk meraih prestasi terbaik di Lomba MAPSI. Kerjakan soal latihan, evaluasi hasil belajar, dan terus tingkatkan kemampuanmu dari waktu ke waktu.</p>
     </div>
     <div class="role-grid">
       <div class="role-card" onclick="goto('siswa-login')">
         <div class="icon">📝</div>
         <h3>Masuk sebagai Siswa</h3>
-        <p>Isi data diri lalu kerjakan soal ujian yang sudah disiapkan guru. Nilai tersimpan otomatis ke database.</p>
+        <p>Yuk, uji dan asah kemampuanmu melalui soal-soal latihan MAPSI. Kerjakan dengan teliti dan jadikan setiap latihan sebagai langkah menuju prestasi.</p>
       </div>
       <div class="role-card" onclick="goto('guru-login')">
         <div class="icon">🗂️</div>
         <h3>Masuk sebagai Guru / Admin</h3>
-        <p>Kelola bank soal, atur waktu ujian, lihat rekap nilai, dan analisis materi yang paling banyak salah.</p>
+        <p>Kelola soal latihan, atur sesi ujian, pantau hasil latihan siswa, dan analisis materi yang masih perlu ditingkatkan.</p>
       </div>
     </div>`;
 }
